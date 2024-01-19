@@ -1,0 +1,119 @@
+import 'package:pod_player/pod_player.dart';
+import 'package:flutter/material.dart';
+
+///
+///
+class PlayVideoFromYoutube extends StatefulWidget {
+  final String _title;
+  final TextEditingController _urlController;
+  ///
+  ///
+  const PlayVideoFromYoutube({
+    Key? key,
+    required String title,
+    required TextEditingController urlController
+  }) : 
+    _title = title,
+    _urlController = urlController,
+    super(key: key);
+  //
+  //
+  @override
+  // ignore: no_logic_in_create_state
+  State<PlayVideoFromYoutube> createState() => _PlayVideoFromYoutubeState(
+    title: _title,
+    urlController: _urlController,
+  );
+}
+///
+///
+class _PlayVideoFromYoutubeState extends State<PlayVideoFromYoutube> {
+  String _url = '';
+  String _title;
+  final _podPlayerConfig = const PodPlayerConfig(
+    autoPlay: false,
+    // videoQualityPriority: [360],
+  );
+  final TextEditingController _urlController;
+  late PodPlayerController _videoController;
+  late PodVideoPlayer _player;
+  bool _playerReady = false;
+  String _error = '';
+  ///
+  ///
+  _PlayVideoFromYoutubeState({
+    required String title,
+    required TextEditingController urlController
+  }):
+    _title = title,
+    _urlController = urlController;
+  //
+  //
+  @override
+  void initState() {
+    _urlController.addListener(() {
+        _url = _urlController.text;
+        _title = _urlController.text;
+        print('url: $_url');
+        _videoController.changeVideo(
+          playVideoFrom: PlayVideoFrom.youtube(_url, live: false),
+        );
+        setState(() {});
+    });
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(Duration(milliseconds: 100));
+      _initVideoPlayer();
+    });
+  }
+  void _initVideoPlayer() async {
+    _url = _urlController.text;
+    _videoController = PodPlayerController(
+      playVideoFrom: PlayVideoFrom.youtube(_url, live: false),
+      podPlayerConfig: _podPlayerConfig,
+    );
+    await _videoController.initialise();
+    await Future.delayed(Duration(milliseconds: 100));
+    _player = PodVideoPlayer(
+      videoTitle: Text(_title),
+      controller: _videoController,
+      onVideoError: () {
+        return const Center(child: Text("Error"));
+      },
+    );
+    setState(() {
+      _playerReady = true;
+    });
+  }
+  //
+  //
+  @override
+  void dispose() {
+    _videoController.dispose();
+    super.dispose();
+  }
+  //
+  //
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text('Title: $_title'),
+          Text('URL: $_url'),
+          Text('Error: $_error'),
+          Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+            child: _playerReady
+              ? Flexible(
+                child: _player,
+              )
+              : const Text('Player not ready'),
+          ),
+        ],
+      )
+    );
+  }
+}
