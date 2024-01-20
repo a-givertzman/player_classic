@@ -34,10 +34,10 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   # pod_player: ^0.2.0
-  # youtube_data_api: ^1.0.4
   googleapis: ^12.0.0
   googleapis_auth: ^1.4.1
   youtube_player_iframe: ^4.0.4
+  pod_player: ^0.2.1
 
 dev_dependencies:
   flutter_test:

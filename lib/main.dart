@@ -2,19 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:googleapis/youtube/v3.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:player_classic/player.dart';
+// import 'package:player_classic/pod_player.dart';
 
 void main() {
   runApp(const MyApp());
 }
-
+///
+///
 class MyApp extends StatelessWidget {
+  ///
   const MyApp({super.key});
-
-  // This widget is the root of your application.
+  //
+  //
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowMaterialGrid: false,
+      debugShowCheckedModeBanner: false,
+      // title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -23,11 +28,15 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
+///
+///
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
   final String title;
-
+  ///
+  ///
+  const MyHomePage({super.key, required this.title});
+  //
+  //
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -43,10 +52,11 @@ class _MyHomePageState extends State<MyHomePage> {
     _controller = TextEditingController.fromValue(
       const TextEditingValue(text: ''),
     ),
-    _videoIdController = TextEditingController.fromValue(
+    _videoIdController = TextEditingController();
+    // .fromValue(
       // const TextEditingValue(text: 'https://youtu.be/hecoYVmBTcU?si=kCeWlr4kM1cUITD4'),
-      const TextEditingValue(text: 'hecoYVmBTcU?si=kCeWlr4kM1cUITD4'),
-    );
+      // const TextEditingValue(text: 'hecoYVmBTcU?si=kCeWlr4kM1cUITD4'),
+    // );
   //
   //
   @override
@@ -54,30 +64,31 @@ class _MyHomePageState extends State<MyHomePage> {
     final titleSyle = Theme.of(context).textTheme.bodyLarge;
     final subTitleSyle = Theme.of(context).textTheme.bodySmall;
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(0.0),
+        child: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          // title: Text(widget.title),
+        ),
       ),
       body: Column(
         // mainAxisAlignment: MainAxisAlignment.,
-        // crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Row(
             children: [
               Flexible(
-                child: TextField(
-                  controller: _controller,
-                  decoration: const InputDecoration(
-                    hintText: 'search',
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: TextField(
+                    controller: _controller,
+                    decoration: const InputDecoration(
+                      hintText: 'search',
+                    ),
+                    onSubmitted: (value) {
+                      _search(_controller.text);
+                    },
                   ),
-                  onSubmitted: (value) {
-                    _search(_controller.text);
-                  },
                 ),
               ),
               IconButton(
@@ -88,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             ],
           ),
-          Flexible(
+          if (_videoIdController.text.isNotEmpty) Flexible(
             child: PlayVideoFromYoutube(
               title: _videoIdController.text,
               idController: _videoIdController,
@@ -115,7 +126,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   dense: true,
                   onTap: () {
                     if (videoId != null) {
-                      _videoIdController.text = videoId;
+                      setState(() {
+                        _videoIdController.text = videoId;
+                      });
                     }
                   },
                 );
@@ -124,11 +137,11 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {},
+      //   tooltip: 'Increment',
+      //   child: const Icon(Icons.add),
+      // ),
     );
   }
   ///

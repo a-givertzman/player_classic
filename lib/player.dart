@@ -44,14 +44,18 @@ class _PlayVideoFromYoutubeState extends State<PlayVideoFromYoutube> {
   //
   @override
   void initState() {
-    _url = _idController.text;
     _videoController = YoutubePlayerController(
       params: const YoutubePlayerParams(
         mute: false,
         showControls: true,
         showFullscreenButton: true,
       ),
-    );    
+    );
+    if (_idController.text.isNotEmpty) {
+      final videoId = _idController.text;
+      _url = 'http://youtu.be/$videoId';
+      _videoController?.loadVideoById(videoId: videoId);
+    }
     _idController.addListener(() {
         final videoId = _idController.text;
         _url = 'http://youtu.be/$videoId';
