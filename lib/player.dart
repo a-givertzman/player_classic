@@ -6,15 +6,18 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 class PlayVideoFromYoutube extends StatefulWidget {
   final String _title;
   final TextEditingController _idController;
+  final void Function()? _onEnded;
   ///
   ///
   const PlayVideoFromYoutube({
     Key? key,
     required String title,
-    required TextEditingController idController
+    required TextEditingController idController,
+    void Function()? onEnded,
   }) : 
     _title = title,
     _idController = idController,
+    _onEnded = onEnded,
     super(key: key);
   //
   //
@@ -23,6 +26,7 @@ class PlayVideoFromYoutube extends StatefulWidget {
   State<PlayVideoFromYoutube> createState() => _PlayVideoFromYoutubeState(
     title: _title,
     idController: _idController,
+    onEnded: _onEnded,
   );
 }
 ///
@@ -31,15 +35,18 @@ class _PlayVideoFromYoutubeState extends State<PlayVideoFromYoutube> {
   String _url = '';
   String _title;
   final TextEditingController _idController;
+  final void Function()? _onEnded;
   YoutubePlayerController? _videoController;
   ///
   ///
   _PlayVideoFromYoutubeState({
     required String title,
-    required TextEditingController idController
+    required TextEditingController idController,
+    void Function()? onEnded,
   }):
     _title = title,
-    _idController = idController;
+    _idController = idController,
+    _onEnded = onEnded;
   //
   //
   @override
@@ -61,8 +68,33 @@ class _PlayVideoFromYoutubeState extends State<PlayVideoFromYoutube> {
         _url = 'http://youtu.be/$videoId';
         _title = _idController.text;
         print('url: $_url');
-        _videoController?.loadVideoById(videoId: videoId);
-        // setState(() {});
+        _videoController?.loadVideoById(videoId: videoId).then((_) {
+        });
+        _videoController?.duration.whenComplete(() {
+          print('Duration complitted');
+        });
+    });
+    // _videoController?.playerState.asStream().listen((event) {
+    //   print('event: $event');
+    //   if (event == PlayerState.ended) {
+    //     print('Ended');
+    //     final onEnded = _onEnded;
+    //     if (onEnded != null) {
+    //       onEnded();
+    //     }
+    //   }
+    // });
+    _videoController?.videoStateStream.listen((event) {
+      _videoController?.playerState.then((state) {
+        print('state: $state');
+        if (event == PlayerState.ended) {
+          print('Ended');
+          final onEnded = _onEnded;
+          if (onEnded != null) {
+            onEnded();
+          }
+        }
+      });
     });
     super.initState();
   }

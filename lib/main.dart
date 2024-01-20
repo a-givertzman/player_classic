@@ -46,6 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _videoIdController;
   List<SearchResult> _searchResult = [];
   String? _nextPageToken;
+  int _playingIndex = 0;
   ///
   ///
   _MyHomePageState():
@@ -103,6 +104,16 @@ class _MyHomePageState extends State<MyHomePage> {
             child: PlayVideoFromYoutube(
               title: _videoIdController.text,
               idController: _videoIdController,
+              onEnded: () {
+                _playingIndex++;
+                final item = _searchResult.elementAtOrNull(_playingIndex);
+                final videoId = item?.id?.videoId;
+                if (videoId != null) {
+                  setState(() {
+                    _videoIdController.text = videoId;
+                  });
+                }
+              }
             ),
           ),
           Flexible(
@@ -128,6 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     if (videoId != null) {
                       setState(() {
                         _videoIdController.text = videoId;
+                        _playingIndex = index;
                       });
                     }
                   },
